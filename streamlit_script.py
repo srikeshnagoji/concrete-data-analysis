@@ -198,7 +198,7 @@ st.plotly_chart(scat3d2)
 ## But, lesser the water to cement ratio, greater would be the strength of the concrete. ​
 '''
 '''
-# # 6. How can the usage of superplastic and water be correlated?​
+# 6. How can the usage of superplastic and water be correlated?​
 # scatter plot of water vs superplastic
 '''
 scat_w_vs_sp = px.scatter(concrete[concrete.strength > 60], x='water', y='superplastic',
@@ -259,7 +259,7 @@ st.plotly_chart(pxfig)
 
 # 
 ash_hist = px.histogram(df1.ash, title = 'Histogram of Ash in (concrete strength > 60 and age < 60)', width=700, height=700, nbins=20)
-st.plotly_chart(pxfig)
+st.plotly_chart(ash_hist)
 
 '''
 ## The above hostogram indicates that ash is not used extensively in the concrete of greater strength (above 60 units).
