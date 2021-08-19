@@ -171,7 +171,9 @@ concrete['water_cement_ratio'] = concrete.water / concrete.cement
 ## Filter the data and extract those in which slag is used (non zero)
 ## Further filter the data to remove those samples with less composition of water. Then, plot a 3D graph of Slag vs Age vs Strength.
 '''
-scat3d = px.scatter_3d(concrete[(concrete.slag != 0) & (concrete.water < 175)], x='slag', y='age', z='strength',
+max_water_units = st.slider('Max water units', 120, 180, 175)
+
+scat3d = px.scatter_3d(concrete[(concrete.slag != 0) & (concrete.water < max_water_units)], x='slag', y='age', z='strength',
               color_continuous_scale=px.colors.sequential.Viridis, color='water',
               title="Slag vs Age vs Strength", width=800, height=800)
 st.plotly_chart(scat3d)
