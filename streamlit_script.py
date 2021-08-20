@@ -13,27 +13,33 @@ st.title("Analysis of the Concrete dataset by utilizing Numpy, Pandas and Visual
 
 Components:
 
-#### Water - Water is needed to chemically react with the cement (hydration) and too provide workability with the concrete.
-#### Aggregates- Sand is the fine aggregate. Gravel or crushed stone is the coarse aggregate in most mixes.
-#### Cement - The cement and water form a paste that coats the aggregate and sand in the mix. The paste hardens and binds the aggregates and sand together.
+#### Cement - The cement and water form a paste hardens and binds the aggregates and sand together.​
+#### Slag - Slag is usually a mixture of metal oxides and silicon dioxide.​
+#### Ash – Pulverised combustion residuals used as partial replacement for portland cement.​
+#### Superplastic - High range water reducers which are used in making high strength concrete.​
+#### Water - Water is needed to chemically react with the cement (hydration) and too provide workability with the concrete.​
+#### Aggregates- Sand is the fine aggregate. Gravel or crushed stone is the coarse aggregate in most mixes.​
 '''
 
 '''
 ## Insights drawn on following aspects:
 
-1. To which age range most of the observations in the data fall into? ​
-2. Which features in our data set are more correlated? ​ ​
-3. Which materials have greater effect on strength of the concrete?  
-4. What effect does the usage of slag, have on the strength of the concrete as it ages? ​ ​
-5. Which ratio of materials is consistent throughout the compositions observed? ​ ​
-6. How can the usage of superplastic and water be correlated?​ 
-7. Will the strength of concrete increases with the proportion of Ash used along with cement?​ ​ 
+
+1. To which age range most of the observations in the data fall into?  
+2. Which features in our data set are more correlated? ​​ ​
+3. What is the effect of usage of water, cement and slag have on strength of the concrete?​ 
+4. What effect does the usage of slag, have on the strength of the concrete as it ages?  ​ ​
+5. How can the usage of superplastic and water be correlated?​ ​ 
+6. Will the strength of concrete increases with the proportion of Ash and Super-Plastic used along with cement?​​ 
+
 
 '''
 concrete = pd.read_csv('./concrete.csv')
 
-if st.checkbox('Show dataframe'):
+if not st.checkbox('Hide dataframe'):
     concrete
+
+
 
 '''
 ## Dimentionality of the dataframe.
@@ -43,7 +49,6 @@ st.write(f'Rows: {rows}, Columns: {cols}')
 
 
 # 
-
 ## Concise summary of dataframe.
 concrete.info()
 
@@ -86,7 +91,7 @@ st.plotly_chart(pfig)
 
 '''
 # 
-## The above graph indicates that, most of our data set is concentrated in the age range of 30.
+## The above graph indicates that, most of our data set is concentrated in the age range of 0 - 30.
 '''
 # 
 pie = px.pie(concrete, names='age', width=500, height=500, 
@@ -121,29 +126,38 @@ st.pyplot(fig)
 ## 3. strength and superplastic
 
 ## superplastic and water have negative correlation.
+
+
 '''
-'''
+
 # 3. Which materials have greater effect on strength of the concrete?
-'''
 # TODO: uncomment
 # for col in concrete.columns:
 #     if(col!='strength'):
 #         scat = px.scatter(concrete, x=col, y='strength', width=600 , height=600).show()
 #         st.plotly_chart(scat)
 
-
+'''
+## Let us plot histogram of strengths to determine the distribution of the data.
+'''
 # 
 # histogram of strengths
 pxfig = px.histogram(concrete, x = 'strength', title = 'Histogram of Concrete Strengths')
 pxfig.update_layout(bargap=0.2)
 st.plotly_chart(pxfig)
 
+'''
 
+## Scatter plot cement against strength to find if there are any patterns in the data.
+'''
 # 
 # plot a scatter plot - cement against strength
 scat = px.scatter(concrete, x='cement', y='strength', color='strength', width=600 , height=600, title = 'Scatter plot - Cement against Strength')
 st.plotly_chart(scat)
+'''
 
+# 3. What is the effect of usage of water, cement and slag have on strength of the concrete?​
+'''
 # 
 # Calculate ratio between water and cement
 concrete['water_cement_ratio'] = concrete.water / concrete.cement
@@ -152,13 +166,16 @@ concrete['slag_cement_ratio'] = concrete.slag / concrete.cement
 
 # plot water_cement_ratio vs strength
 scat2 = px.scatter(concrete, x='water_cement_ratio', y='strength', color='slag_cement_ratio',
-           title='Water/Cement Ratio vs Strength', width=700, height=600)
+           title='Water to Cement Ratio vs Strength',
+           labels={"water_cement_ratio": 'Water - Cement ratio', 'slag_cement_ratio': 'Slag - Cement ratio'},
+           width=700, height=600)
 st.plotly_chart(scat2)
 '''
 ## From the above plot, it is evident that,​
 
 ## 1. Lower the water to cement ratio, the stronger is the concrete. ​
-## 2. The proportion of cement is a major contributor to the strength.​
+## 2. ​​​Lower the slag to cement ratio, the stronger is the concrete. ​
+## 3. The proportion of cement is a major contributor to the strength.​
 '''
 
 '''
@@ -173,16 +190,17 @@ concrete['water_cement_ratio'] = concrete.water / concrete.cement
 '''
 max_water_units = st.slider('Max water units', 120, 180, 175)
 
-scat3d = px.scatter_3d(concrete[(concrete.slag != 0) & (concrete.water < max_water_units)], x='slag', y='age', z='strength',
-              color_continuous_scale=px.colors.sequential.Viridis, color='water',
+scat3d = px.scatter_3d(concrete[(concrete.slag != 0) & (concrete.water < 175)], x='slag', y='age', z='strength',
+              color_continuous_scale=px.colors.sequential.Viridis, color='cement',
               title="Slag vs Age vs Strength", width=800, height=800)
 st.plotly_chart(scat3d)
 '''
-## The plot shows that, the usage of slag, increases strength for long term.​
-## Also, the strength increases slightly as the concrete ages in the presence of water/moisture. (around 160 units)​
+## The plot shows that,
+## 1. Strength of the concrete increases with age and proportion of cement.​
+## 2. The plot shows that, the usage of slag, increases strength for long term.​
 '''
 '''
-# 5. Which ratio of materials is consistent throughout the compositions observed? 
+### Does the proportion of superplastic and water have any effect on the strength of the concrete?
 '''
 # 
 # Calculate the ratio of Superplastic to water
@@ -200,19 +218,19 @@ st.plotly_chart(scat3d2)
 ## But, lesser the water to cement ratio, greater would be the strength of the concrete. ​
 '''
 '''
-# 6. How can the usage of superplastic and water be correlated?​
+# 5. How can the usage of superplastic and water be correlated?​
 # scatter plot of water vs superplastic
 '''
-scat_w_vs_sp = px.scatter(concrete[concrete.strength > 60], x='water', y='superplastic',
-           color='strength', trendline='ols', title='Water vs Superplastic')
+scat_w_vs_sp = px.scatter(concrete[concrete.strength > 60], x='water', y='superplastic'
+           , trendline='ols', title='Water vs Superplastic')
 st.plotly_chart(scat_w_vs_sp)
 '''
+## Superplastic is used more when water is used less in proportion.​
 ## The usage of superplastic and water are inverse in proportion. ​
-## However, the strength is dependent on other compositions as well.​
 '''
 # ​
 '''
-# 7. Will the strength of concrete increases with the proportion of Ash used along with cement?​
+# 6. Will the strength of concrete increases with the proportion of Ash and Superplastic used along with cement?​
 '''
 # 
 concrete_1 = concrete.copy()
